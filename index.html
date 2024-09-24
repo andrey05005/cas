@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Слоты</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Подключаем объект Telegram Web App -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-color: #222;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #slot-machine {
+            font-size: 80px;
+            margin-top: 50px;
+        }
+        #spin-button {
+            margin-top: 30px;
+            padding: 15px 30px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        #balance {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #ff0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Игра "Слоты"</h1>
+    <div id="balance">Баланс: <span id="credits">100</span> кредитов</div>
+    <div id="slot-machine">🍒 | 🍋 | 🍊</div>
+    <button id="spin-button">Вращать</button>
+    <div id="message"></div>
+
+    <script>
+        const SLOTS = ['🍒', '🍋', '🍊', '🍉', '⭐', '🔔', '7️⃣'];
+        let credits = 100;
+        const bet = 10;
+
+        const creditsElement = document.getElementById('credits');
+        const slotMachine = document.getElementById('slot-machine');
+        const messageElement = document.getElementById('message');
+        const spinButton = document.getElementById('spin-button');
+
+        spinButton.addEventListener('click', () => {
+            if (credits < bet) {
+                messageElement.textContent = 'Недостаточно кредитов для игры.';
+                return;
+            }
+
+            credits -= bet;
+            creditsElement.textContent = credits;
+
+            const result = [];
+            for (let i = 0; i < 3; i++) {
+                const rand = Math.floor(Math.random() * SLOTS.length);
+                result.push(SLOTS[rand]);
+            }
+
+            slotMachine.textContent = result.join(' | ');
+
+            let win = 0;
+            if (result[0] === result[1] && result[1] === result[2]) {
+                win = 100;
+                messageElement.textContent = `Поздравляем! Вы выиграли ${win} кредитов!`;
+            } else if (result[0] === result[1] || result[1] === result[2] || result[0] === result[2]) {
+                win = 20;
+                messageElement.textContent = `Неплохо! Вы выиграли ${win} кредитов!`;
+            } else {
+                messageElement.textContent = 'Увы, вы ничего не выиграли.';
+            }
+
+            credits += win;
+            creditsElement.textContent = credits;
+        });
+
+        // Настраиваем цветовую тему в соответствии с Telegram
+        const tg = window.Telegram.WebApp;
+        document.body.style.backgroundColor = tg.themeParams.bg_color || '#222';
+        document.body.style.color = tg.themeParams.text_color || '#fff';
+    </script>
+</body>
+</html>
